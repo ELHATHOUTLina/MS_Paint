@@ -1,13 +1,25 @@
 
+import { useRef, useState } from 'react'
+import DrawingCanvas from './DrawingCanvas'
+
 const tools = [
-  "✣", "▣",
-  "▰", "▧",
-  "⌕", "○",
-  "✎", "▥",
-  "▨", "A",
-  "╲", "⌇",
-  "▭", "▱",
-  "◯", "▢",
+  { id: 'pencil', icon: '✎', label: 'Crayon' },
+  { id: 'eraser', icon: '⌧', label: 'Gomme' },
+  { id: 'line', icon: '╲', label: 'Ligne' },
+  { id: 'rectangle', icon: '▭', label: 'Rectangle' },
+  { id: 'selection', icon: '✣', label: 'Selection' },
+  { icon: '▣', label: 'Fill' },
+  { icon: '▰', label: 'Brush' },
+  { icon: '▧', label: 'Spray' },
+  { icon: '⌕', label: 'Zoom' },
+  { icon: '○', label: 'Ellipse' },
+  { icon: '▥', label: 'Textured' },
+  { icon: '▨', label: 'Shape' },
+  { icon: 'A', label: 'Text' },
+  { icon: '⌇', label: 'Curve' },
+  { icon: '▱', label: 'Polygon' },
+  { icon: '◯', label: 'Circle' },
+  { icon: '▢', label: 'Square' },
 ]
 
 const colors = [
@@ -18,6 +30,11 @@ const colors = [
 ]
 
 export default function PaintWindow() {
+  const [tool, setTool] = useState('pencil')
+  const [activeColor, setActiveColor] = useState(colors[0])
+  const [historyState, setHistoryState] = useState({ canUndo: false, canRedo: false })
+  const canvasActionsRef = useRef(null)
+
   return (
     <div className="paint-window">
       <div className="title-bar">
@@ -35,36 +52,72 @@ export default function PaintWindow() {
 
       <div className="menu-bar">
         {["File", "Edit", "View", "Image", "Colors", "Help"].map((item) => (
-          <button key={item} className="menu-item">{item}</button>
+          <button
+            key={item}
+            className="menu-item"
+            type="button"
+            onClick={item === 'Image' ? () => canvasActionsRef.current?.downloadPng?.() : undefined}
+            title={item === 'Image' ? 'Exporter en PNG' : undefined}
+          >
+            {item}
+          </button>
         ))}
+
+        <div className="menu-history-actions" aria-label="Historique">
+        <button
+          type="button"
+          className="menu-item history-btn"
+          onClick={() => canvasActionsRef.current?.undo()}
+          disabled={!historyState.canUndo}
+          aria-label="Undo"
+          title="Undo"
+        >
+          ←
+        </button>
+        <button
+          type="button"
+          className="menu-item history-btn"
+          onClick={() => canvasActionsRef.current?.redo()}
+          disabled={!historyState.canRedo}
+          aria-label="Redo"
+          title="Redo"
+        >
+          →
+        </button>
+        </div>
       </div>
 
       <div className="paint-main-area">
         <aside className="toolbar">
           <div className="tool-grid">
-            {tools.map((tool, index) => (
-              <button key={index} className="tool-button">
-                {tool}
+            {tools.map((item, index) => (
+              <button
+                key={`${item.icon}-${index}`}
+                type="button"
+                className={`tool-button${item.id === tool ? ' is-selected' : ''}`}
+                onClick={item.id ? () => setTool(item.id) : undefined}
+                aria-pressed={item.id ? item.id === tool : undefined}
+                aria-label={item.label}
+                title={item.label}
+              >
+                {item.icon}
               </button>
             ))}
           </div>
           <div className="toolbar-filler" />
         </aside>
 
-        <main className="canvas-workspace">
-          <div className="canvas-frame">
-            <div className="canvas-surface" />
-          </div>
-
-          <div className="canvas-scrollbar vertical" />
-          <div className="canvas-scrollbar horizontal" />
-          <div className="canvas-corner" />
-        </main>
+        <DrawingCanvas
+          ref={canvasActionsRef}
+          tool={tool}
+          color={activeColor}
+          onHistoryChange={setHistoryState}
+        />
       </div>
 
       <div className="color-palette">
         <div className="active-colors">
-          <div className="active-color primary" />
+          <div className="active-color primary" style={{ backgroundColor: activeColor }} />
           <div className="active-color secondary" />
         </div>
 
@@ -72,8 +125,11 @@ export default function PaintWindow() {
           {colors.map((color, index) => (
             <button
               key={index}
-              className="palette-swatch"
+              type="button"
+              className={`palette-swatch${activeColor === color ? ' is-selected' : ''}`}
               style={{ backgroundColor: color }}
+              onClick={() => setActiveColor(color)}
+              aria-label={`Couleur ${index + 1}`}
             />
           ))}
         </div>
