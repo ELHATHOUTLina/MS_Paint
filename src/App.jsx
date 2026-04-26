@@ -1,8 +1,11 @@
 import PaintWindow from './components/PaintWindow'
 import './styles/paint.css'
 
-function App() {
-  return <PaintWindow />
+export default function App() {
+  return (
+    <div className="paint-desktop">
+      <PaintWindow />
+    </div>
+  )
 }
 
-export default App

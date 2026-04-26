@@ -26,4 +26,6 @@ Pour le moment, le projet est un MVP visuel sans logique avancée de dessin.
 - Vite
 - CSS (fichier principal : src/styles/paint.css)
 
+## Auteur
 
+Projet réalisé pour le fun

@@ -1,5 +1,5 @@
 function Toolbar() {
-  const tools = ['✂', '⬚', '🧽', '🖌', '💧', '🔍', '✏', '🅰', '／', '⌒', '▭', '◯']
+  const tools = ['✣', '⬚', '🧽', '🪣', '💧', '🔍', '✏', '🖌', '🧴', 'A', '╱', '⌇', '▭', '⌒', '◯', '▱']
 
   return (
     <aside className="toolbar" aria-label="Tools">

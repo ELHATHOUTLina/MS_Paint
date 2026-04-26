@@ -2,7 +2,7 @@ function DrawingCanvas() {
   return (
     <section className="canvas-workspace" aria-label="Drawing area">
       <div className="canvas-frame">
-        <div className="canvas-surface">Canvas</div>
+        <div className="canvas-surface" />
       </div>
 
       <div className="canvas-scrollbar vertical" aria-hidden="true" />
